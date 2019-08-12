@@ -7,21 +7,22 @@
 #include <pthread.h>
 
 int shop[5];
-pthread_mutex_t lock_shop[5];
+pthread_mutex_t lockShop[5];
+int stopL;
 
 
 void* threadClient(void* thread_Cl){
 	//завершаем поток
 	int *need = (int*)thread_Cl;
-    int i, tmp;
+    int i, ;
     srand(pthread_self());
     while(*need > 0)
     {
         i = rand() % 5;
-        pthread_mutex_lock(&lock_shop[i]);
-        //tmp = shop[i];
+        pthread_mutex_lock(&lockShop[i]);
+        tmp = shop[i];
         shop[i] = 0;
-        pthread_mutex_unlock(&lock_shop[i]);
+        pthread_mutex_unlock(&lockShop[i]);
         *need -= tmp;
         printf("customer: %x, shop: %d, %d need: %d\n", (int)pthread_self(), i, tmp, *need);
         sleep(4);
@@ -30,13 +31,13 @@ void* threadClient(void* thread_Cl){
 	sleep(3);
 	pthread_exit(0);
 }
-void* threadGruz(){
-	//завершаем поток
+void* threadGruz()
+{
 	int i;
 	i = rand() % 5;
-	pthread_mutex_lock(&lock_shop[i]);
+	pthread_mutex_lock(&lockShop[i]);
     shop[i] += 500;
-    pthread_mutex_unlock(&lock_shop[i]);
+    pthread_mutex_unlock(&lockShop[i]);
 	sleep(2);
 	pthread_exit(0);
 }
@@ -65,6 +66,6 @@ int main()
     }
     pthread_join (client[0], NULL);
     pthread_join (client[1], NULL);
-    pthread_join (client[3], NULL);
-fclose(fd);
+    pthread_join (client[2], NULL);
+//fclose(fd);
 }
